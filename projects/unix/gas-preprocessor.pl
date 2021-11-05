@@ -10,8 +10,9 @@ use strict;
 # implements the subset of the gas preprocessor used by x264 and ffmpeg
 # that isn't supported by Apple's gas.
 
+# The "arm64\n" variant is for ffmpeg 2.3.6
 my %canonical_arch = ("aarch64" => "aarch64", "arm64" => "aarch64",
-                      "arm"     => "arm",
+                      "arm64\n" => "aarch64", "arm"   => "arm",
                       "powerpc" => "powerpc", "ppc"   => "powerpc");
 
 my %comments = ("aarch64" => '//',
@@ -1063,7 +1064,7 @@ sub handle_serialized_line {
             }
 
             # Convert "ld1 {v0.4h-v3.4h}" into "ld1 {v0.4h,v1.4h,v2.4h,v3.4h}"
-            if ($line =~ /(?:ld|st)\d\s+({\s*v(\d+)\.(\d[bhsdBHSD])\s*-\s*v(\d+)\.(\d[bhsdBHSD])\s*})/) {
+            if ($line =~ /(?:ld|st)\d\s+(\{\s*v(\d+)\.(\d[bhsdBHSD])\s*-\s*v(\d+)\.(\d[bhsdBHSD])\s*})/) {
                 my $regspec = $1;
                 my $reg1 = $2;
                 my $layout1 = $3;
