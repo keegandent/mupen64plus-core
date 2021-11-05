@@ -18,25 +18,25 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-// #ifdef LEADING_UNDERSCORE
+#ifdef LEADING_UNDERSCORE
 
-// #define GLOBAL_FUNCTION(name)  \
-// 	.globl _##name;            \
-// 	.type _##name, %function;  \
-// 	_##name
+#define GLOBAL_FUNCTION(name)  \
+    .globl _##name;            \
+    .type _##name, %function;  \
+    _##name
 
-// #define LOCAL_FUNCTION(name)  \
-// 	.type _##name, %function; \
-// 	_##name
+#define LOCAL_FUNCTION(name)  \
+    .type _##name, %function; \
+    _##name
 
-// #define GLOBAL_VARIABLE(name, size_) \
-// 	.global _##name;                 \
-// 	.type   _##name, %object;        \
-// 	.size   _##name, size_
+#define GLOBAL_VARIABLE(name, size_) \
+    .global _##name;                 \
+    .type   _##name, %object;        \
+    .size   _##name, size_
 
-// #define EXTERN_SYMBOL(name) _##name
+#define EXTERN_SYMBOL(name) _##name
 
-// #else
+#else
 
 #define GLOBAL_FUNCTION(name)  \
     .globl name;               \
@@ -54,6 +54,10 @@
     .hidden name;                    \
     .type   name, %object;           \
     .size   name, size_
+
+#define EXTERN_SYMBOL(name) name
+
+#endif
 
 .macro movl Wn, imm
     movz    \Wn, (\imm >> 16) & 0xFFFF, lsl 16
