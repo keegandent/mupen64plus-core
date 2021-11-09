@@ -454,12 +454,12 @@ endif
 # 2. variables for profiling and adding debugging symbols
 ifeq ($(PROFILE), 1)
   CFLAGS += -pg -g
-  INSTALL_STRIP_FLAG ?= 
+  INSTALL_STRIP_FLAG ?=
 else
   ifeq ($(DEBUG), 1)
     CFLAGS += -g
     OPTFLAGS = -Og
-    INSTALL_STRIP_FLAG ?= 
+    INSTALL_STRIP_FLAG ?=
   else
     CFLAGS += -DNDEBUG
     ifneq ($(OS),OSX)
@@ -813,7 +813,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.asm $(SRCDIR)/asm_defines/asm_defines_nasm.h
 	$(COMPILE.as) -o $@ $<
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.S $(SRCDIR)/asm_defines/asm_defines_gas.h
-	$(COMPILE.c) -o $@ $<
+	$(QCC) perl ./gas-preprocessor.pl -arch arm64 -as-type apple-clang -- $(CC) $(OPTFLAGS) $(WARNFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(COMPILE.c) -o $@ $<
