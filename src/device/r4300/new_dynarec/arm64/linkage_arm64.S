@@ -126,7 +126,7 @@ GLOBAL_FUNCTION(jump_vaddr_x6):
 
 GLOBAL_FUNCTION(jump_vaddr_x8):
     mov    w0, w8
-    b      jump_vaddr
+    b      EXTERN_SYMBOL(jump_vaddr)
 
 GLOBAL_FUNCTION(jump_vaddr_x9):
     mov    w0, w9
@@ -225,13 +225,13 @@ GLOBAL_FUNCTION(jump_vaddr):
 GLOBAL_FUNCTION(verify_code):
     /* x0 = head */
     mov    x21, x30 /* Save link register */
-    bl     verify_dirty
+    bl     EXTERN_SYMBOL(verify_dirty)
     tst    x0, x0
     b.ne   .D1
     mov    x30, x21 /* Restore link register */
     ret
 .D1:
-    bl     get_addr
+    bl     EXTERN_SYMBOL(get_addr)
     br     x0
 
 GLOBAL_FUNCTION(cc_interrupt):
@@ -244,13 +244,13 @@ GLOBAL_FUNCTION(cc_interrupt):
     ldr    w1, [x29, #fp_pending_exception]
     ldr    w2, [x29, #fp_stop]
     tst    w2, w2
-    b.ne   new_dyna_stop
+    b.ne   EXTERN_SYMBOL(new_dyna_stop)
     tst    w1, w1
     b.ne   .E1
     ret
 .E1:
     ldr    w0, [x29, #fp_pcaddr]
-    bl     get_addr_ht
+    bl     EXTERN_SYMBOL(get_addr_ht)
     br     x0
 
 LOCAL_FUNCTION(new_dyna_stop):
@@ -266,7 +266,7 @@ LOCAL_FUNCTION(new_dyna_stop):
 GLOBAL_FUNCTION(do_interrupt):
     ldr    w2, [x29, #fp_stop]
     tst    w2, w2
-    b.ne   new_dyna_stop
+    b.ne   EXTERN_SYMBOL(new_dyna_stop)
     ldr    w0, [x29, #fp_pcaddr]
     bl     EXTERN_SYMBOL(get_addr_ht)
     ldr    w20, [x29, #fp_cycle_count]
@@ -284,15 +284,15 @@ GLOBAL_FUNCTION(fp_exception):
 
 GLOBAL_FUNCTION(jump_syscall):
     str    w0, [x29, #fp_pcaddr]
-    bl     SYSCALL_new
+    bl     EXTERN_SYMBOL(SYSCALL_new)
     br     x0
 
 GLOBAL_FUNCTION(jump_eret):
     str    w20, [x29, #fp_cycle_count]
-    bl     ERET_new
+    bl     EXTERN_SYMBOL(ERET_new)
     ldr    w20, [x29, #fp_cycle_count]
     tst    w0, w0
-    b.eq   new_dyna_stop
+    b.eq   EXTERN_SYMBOL(new_dyna_stop)
     br     x0
 
 GLOBAL_FUNCTION(dyna_linker):
@@ -304,12 +304,12 @@ GLOBAL_FUNCTION(dyna_linker_ds):
     br     x0
 
 GLOBAL_FUNCTION(new_dyna_start):
-    adrp   x16, g_dev
-    add    x16, x16, :lo12:g_dev
+    adrp   x16, EXTERN_SYMBOL(g_dev)
+    add    x16, x16, :lo12:EXTERN_SYMBOL(g_dev)
     movl   x1, (device_r4300_new_dynarec_hot_state_dynarec_local + saved_context)
     add    x16, x16, x1
-    adrp   x1, base_addr_rx
-    add    x1, x1, :lo12:base_addr_rx
+    adrp   x1, EXTERN_SYMBOL(base_addr_rx)
+    add    x1, x1, :lo12:EXTERN_SYMBOL(base_addr_rx)
     mov    w0, #0xa4000000
     stp    x19,x20,[x16,#0]
     stp    x21,x22,[x16,#16]
