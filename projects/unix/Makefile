@@ -211,6 +211,7 @@ ifeq ($(OS), LINUX)
     ASFLAGS = -f elf
   endif
 endif
+OSX_ASM_HACK :=
 ifeq ($(OS), OSX)
   OSX_SDK_PATH = $(shell xcrun --sdk macosx --show-sdk-path)
 
@@ -237,6 +238,7 @@ ifeq ($(OS), OSX)
   endif
   ifeq ($(CPU), ARM)
     CFLAGS += -pipe -arch arm64 -mmacosx-version-min=10.16 -isysroot $(OSX_SDK_PATH) -DLEADING_UNDERSCORE
+    OSX_ASM_HACK =  perl ./gas-preprocessor.pl -arch arm64 -as-type apple-clang -- 
   endif
 endif
 ifeq ($(OS), MINGW)
@@ -813,7 +815,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.asm $(SRCDIR)/asm_defines/asm_defines_nasm.h
 	$(COMPILE.as) -o $@ $<
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.S $(SRCDIR)/asm_defines/asm_defines_gas.h
-	$(QCC) perl ./gas-preprocessor.pl -arch arm64 -as-type apple-clang -- $(CC) $(OPTFLAGS) $(WARNFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+	$(QCC)$(OSX_ASM_HACK)$(CC) $(OPTFLAGS) $(WARNFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(COMPILE.c) -o $@ $<
